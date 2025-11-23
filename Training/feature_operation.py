@@ -48,24 +48,22 @@ def feature_operation(data):
     
     categorical_cols = ['train_type', 'train_class', 'fare','origin', 'destination']
 
-    label_encoders = LabelEncoder()
+    label_encoders = {}  # dict: column_name -> LabelEncoder
     for col in categorical_cols:
-        data[col] = label_encoders.fit_transform(data[col])
-        print(f"Label encoded column: {col}\n")
+        le = LabelEncoder()
+        data[col] = le.fit_transform(data[col])
+        label_encoders[col] = le          # store encoder for that column
+        print(f"Label encoded column: {col}")
 
-    # save label_encoders instance as joblib file for future use during inference
-
-    # path folder to save all instances 
-    # check the folder path exists else create the folder
-    
+    # save the dict of encoders
     model_dir = os.path.join(os.path.dirname(__file__), "..", "artifacts", "transformers")
     model_dir = os.path.abspath(model_dir)
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
+    os.makedirs(model_dir, exist_ok=True)
+
     label_encoders_path = os.path.join(model_dir, "label_encoders.joblib")
     joblib.dump(label_encoders, label_encoders_path)
 
-    print(f"Saved LabelEncoder instance at: {label_encoders_path}\n")
+    print(f"Saved LabelEncoders dict at: {label_encoders_path}")
 
     # reset index
     data = data.reset_index(drop=True)

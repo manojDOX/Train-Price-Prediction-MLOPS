@@ -88,6 +88,10 @@ def preprocess_data(data):
     # Feature variables (all columns except price)
     X = featured_data.drop(columns=['price'])
 
+    # final dataset columns order and choosen
+    print(X.columns)
+    print("\n")
+
     # Train 70% / Test 30%
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.30, random_state=42

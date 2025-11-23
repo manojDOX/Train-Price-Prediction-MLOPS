@@ -84,7 +84,7 @@ def train_model(X_train, X_test, y_train, y_test):
         n_iter=50,                # number of parameter settings sampled
         scoring='neg_mean_squared_error',
         cv=3,                     # 3-fold cross-validation
-        verbose=2,
+        verbose=0,
         random_state=42,
         n_jobs=-1                 # use all available cores
     )
