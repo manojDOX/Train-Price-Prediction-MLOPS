@@ -5,6 +5,7 @@ import os
 import json
 import joblib
 from sklearn.model_selection import RandomizedSearchCV
+from joblib import dump, load
 
 def train_model(X_train, X_test, y_train, y_test):
     # base model performance without hyperparameter tuning
@@ -13,9 +14,17 @@ def train_model(X_train, X_test, y_train, y_test):
     base_model_LGBMR.fit(X_train, y_train)
     y_pred = base_model_LGBMR.predict(X_test)
 
+    y_pred_train = base_model_LGBMR.predict(X_train)
+    
+    mse_train = mean_squared_error(y_train, y_pred_train)
+    r2_train = r2_score(y_train, y_pred_train)
+
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
 
+    print(f"Mean Squared Error for train: {mse_train}")
+    print(f"R^2 Score for train: {r2_train}")
+    print('\n')
     print(f"Mean Squared Error: {mse}")
     print(f"R^2 Score: {r2}")
 
@@ -75,17 +84,29 @@ def train_model(X_train, X_test, y_train, y_test):
         n_iter=50,                # number of parameter settings sampled
         scoring='neg_mean_squared_error',
         cv=3,                     # 3-fold cross-validation
-        verbose=10,
+        verbose=2,
         random_state=42,
         n_jobs=-1                 # use all available cores
     )
     random_search_lgbm.fit(X_train, y_train)
     best_model_lgbm = random_search_lgbm.best_estimator_
+    # best_model_lgbm = load(os.path.join(model_dir, "lgbm_regressor_hyper_model.joblib"))
     y_pred_hyper = best_model_lgbm.predict(X_test)
+
+    y_pred_hyper_train = best_model_lgbm.predict(X_train)
+
+    mse_hyper_train = mean_squared_error(y_train, y_pred_hyper_train)
+    r2_hyper_train = r2_score(y_train, y_pred_hyper_train)
+
     mse_hyper = mean_squared_error(y_test, y_pred_hyper)
     r2_hyper = r2_score(y_test, y_pred_hyper)
+
+    print(f"After Hyperparameter Tuning for training - Mean Squared Error: {mse_hyper_train}")
+    print(f"After Hyperparameter Tuning for training - R^2 Score: {r2_hyper_train}")
+    print('\n')
     print(f"After Hyperparameter Tuning - Mean Squared Error: {mse_hyper}")
     print(f"After Hyperparameter Tuning - R^2 Score: {r2_hyper}")
+    
 
     # save the hyperparameter tuned model in artifacts/models folder
     hyper_model_path = os.path.join(model_dir, "lgbm_regressor_hyper_model.joblib")
