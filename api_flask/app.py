@@ -5,7 +5,7 @@ import os
 from joblib import load, dump
 from predict_operation import predict_price
 
-# 35s2YxsxdaqOYDCAcTwnSjxzGCm_7CLs6bx4euGqnnDauvwCC
+
 
 
 @app.route('/',methods=['GET','POST'])

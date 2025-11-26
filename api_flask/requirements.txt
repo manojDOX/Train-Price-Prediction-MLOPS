@@ -1,2 +1,8 @@
 flask_ngrok
 pyngrok
+pandas
+scikit-learn
+numpy
+flask
+lightgbm
+matplotlib
