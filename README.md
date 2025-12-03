@@ -2,7 +2,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![ML](https://img.shields.io/badge/ML-Scikit--Learn-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-success)
 
 ## 📌 Project Overview
