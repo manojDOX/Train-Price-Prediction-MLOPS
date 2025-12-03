@@ -2,17 +2,23 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![ML](https://img.shields.io/badge/ML-Scikit--Learn-orange)
-![Status](https://img.shields.io/badge/Status-Production--Ready-success)
+![Flask](https://img.shields.io/badge/Flask-API-green)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
+![AWS](https://img.shields.io/badge/AWS-EC2-FF9900)
+![Status](https://img.shields.io/badge/Status-Production-success)
 
 ## 📌 Project Overview
 
-This project builds an end-to-end machine learning solution to predict **train ticket prices** based on multiple features including train type, class, source, destination, departure time, and more. The pipeline implements best practices in MLOps with automated preprocessing, feature engineering, model training, hyperparameter tuning, and deployment-ready artifacts.
+This project builds an end-to-end machine learning solution to predict **train ticket prices** based on multiple features including train type, class, source, destination, departure time, and more. The pipeline implements best practices in MLOps with automated preprocessing, feature engineering, model training, hyperparameter tuning, and deployment via Flask API on AWS EC2.
 
 ---
 
 ## 🎯 Key Highlights
 
-- ✅ **Automated Pipeline**: End-to-end ML workflow from raw data to trained model
+- ✅ **Automated ML Pipeline**: End-to-end workflow from raw data to trained model
+- ✅ **REST API**: Flask-based prediction service with routing
+- ✅ **Containerized**: Docker image available on Docker Hub
+- ✅ **Cloud Deployed**: Running on AWS EC2 with SSH & HTTPS enabled
 - ✅ **Production Ready**: Modular structure with saved transformers for inference
 - ✅ **Multiple Models**: Comparison of various ML algorithms with hyperparameter tuning
 - ✅ **Reproducible**: Complete artifact storage for model versioning
@@ -23,7 +29,9 @@ This project builds an end-to-end machine learning solution to predict **train t
 ## 🏗️ Architecture Flow
 
 ```
-Raw Data → Preprocessing → Feature Engineering → Model Training → Hyperparameter Tuning → Evaluation → Artifacts
+Raw Data → Preprocessing → Feature Engineering → Model Training → 
+Hyperparameter Tuning → Evaluation → Flask API → Docker Container → 
+AWS EC2 (Linux) → Production Service
 ```
 
 ---
@@ -34,12 +42,18 @@ Raw Data → Preprocessing → Feature Engineering → Model Training → Hyperp
 train-ticket-prediction/
 │
 ├── Training/
-│   ├── app.py                    # Application entry point
+│   ├── app.py                    # Training workflow entry point
 │   ├── train.py                  # Model training orchestrator
 │   ├── pre_processing.py         # Data cleaning & preprocessing
 │   ├── feature_operation.py      # Feature engineering logic
 │   ├── data_upload.py            # Data loading utilities
-│   └── requirements.txt          # Python dependencies
+│   └── requirements.txt          # Training dependencies
+│
+├── api_flask/
+│   ├── app.py                    # Flask API application
+│   ├── predict_operation.py      # Prediction logic & routing
+│   ├── Dockerfile                # Container configuration
+│   └── requirements.txt          # API dependencies
 │
 ├── artifacts/
 │   ├── models/                   # Trained model files (.pkl)
@@ -47,8 +61,10 @@ train-ticket-prediction/
 │   ├── metrics/                  # Performance metrics (.json)
 │   └── images/                   # Evaluation plots (.png)
 │
-├── data_set/                     # Training data
+├── data_set/
+│   └── data1.csv                 # Training dataset
 │
+├── env/                          # Virtual environment
 ├── README.md
 └── .gitignore
 ```
@@ -61,10 +77,14 @@ train-ticket-prediction/
 |----------|-------------|
 | **Language** | Python 3.8+ |
 | **ML Framework** | Scikit-Learn |
+| **API Framework** | Flask |
 | **Data Processing** | Pandas, NumPy |
 | **Visualization** | Matplotlib, Seaborn |
+| **Containerization** | Docker |
+| **Cloud Platform** | AWS EC2 (Linux OS) |
 | **Model Persistence** | Joblib |
 | **Logging** | Python Logging |
+| **Security** | SSH, HTTPS |
 
 ---
 
@@ -73,8 +93,9 @@ train-ticket-prediction/
 ### Prerequisites
 
 - Python 3.8 or higher
-- pip package manager
-- Virtual environment (recommended)
+- Docker (for containerization)
+- AWS Account (for cloud deployment)
+- Git
 
 ### Installation
 
@@ -97,7 +118,11 @@ source env/bin/activate
 
 **3. Install Dependencies**
 ```bash
+# For training
 pip install -r Training/requirements.txt
+
+# For API
+pip install -r api_flask/requirements.txt
 ```
 
 ---
@@ -120,23 +145,118 @@ This will:
 - Save the best model and transformers
 - Generate evaluation metrics
 
-### Output Artifacts
+### Running the Flask API Locally
 
-After training, the following artifacts are generated in the `artifacts/` directory:
+Start the Flask prediction service:
 
+```bash
+cd api_flask
+python app.py
 ```
-artifacts/
-├── models/
-│   └── best_model.pkl              # Best performing model
-├── transformers/
-│   ├── label_encoder.pkl           # Categorical encoders
-│   └── scaler.pkl                  # Feature scalers
-├── metrics/
-│   └── model_performance.json      # Metrics (RMSE, MAE, R²)
-└── images/
-    ├── residual_plot.png           # Residual analysis
-    └── feature_importance.png      # Feature importance chart
+
+The API will be available at `http://localhost:5000`
+
+#### API Endpoints
+
+**Prediction Endpoint**
+```bash
+POST /predict
+Content-Type: application/json
+
+{
+  "train_type": "Express",
+  "class": "Sleeper",
+  "source": "Delhi",
+  "destination": "Mumbai",
+  "departure_time": "08:00",
+  "arrival_time": "14:30",
+  "travel_date": "2024-06-15"
+}
 ```
+
+**Response**
+```json
+{
+  "predicted_price": 1250.50,
+  "currency": "INR",
+  "status": "success"
+}
+```
+
+---
+
+## 🐳 Docker Deployment
+
+### Build Docker Image
+
+```bash
+cd api_flask
+docker build -t train-price-api:latest .
+```
+
+### Run Container Locally
+
+```bash
+docker run -p 5000:5000 train-price-api:latest
+```
+
+### Pull from Docker Hub
+
+The pre-built image is available on Docker Hub:
+
+```bash
+docker pull yourusername/train-price-api:latest
+docker run -p 5000:5000 yourusername/train-price-api:latest
+```
+
+---
+
+## ☁️ AWS EC2 Deployment
+
+### Current Deployment Configuration
+
+- **Platform**: AWS EC2
+- **Operating System**: Linux
+- **Instance Type**: t2.medium (recommended)
+- **Security Group**: 
+  - SSH (Port 22) - Enabled
+  - HTTPS (Port 443) - Enabled
+  - HTTP (Port 80) - Enabled
+  - Custom TCP (Port 5000) - For Flask API
+
+### Deployment Steps
+
+**1. Launch EC2 Instance**
+```bash
+# Connect via SSH
+ssh -i your-key.pem ec2-user@your-ec2-public-ip
+```
+
+**2. Install Docker on EC2**
+```bash
+sudo yum update -y
+sudo yum install docker -y
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+```
+
+**3. Pull and Run Docker Container**
+```bash
+docker pull yourusername/train-price-api:latest
+docker run -d -p 80:5000 --name train-api train-price-api:latest
+```
+
+**4. Access the API**
+```
+http://your-ec2-public-ip/predict
+```
+
+### Security Configuration
+
+- ✅ SSH access enabled for remote management
+- ✅ HTTPS enabled for secure communication
+- ✅ Security groups configured for necessary ports
+- ✅ IAM roles for EC2 service permissions
 
 ---
 
@@ -166,15 +286,62 @@ The model predicts ticket prices based on:
 
 ---
 
+## 🛠️ API Documentation
+
+### Flask Routing Structure
+
+```python
+# Main routes in api_flask/app.py
+@app.route('/')              # Health check
+@app.route('/predict')       # Prediction endpoint
+@app.route('/batch')         # Batch predictions
+```
+
+The `predict_operation.py` module handles all prediction logic including:
+- Input validation
+- Feature transformation
+- Model inference
+- Response formatting
+
+---
+
 ## 🛣️ Roadmap
 
-- [ ] REST API for real-time predictions (FastAPI/Flask)
-- [ ] Docker containerization
+- [x] Flask REST API for real-time predictions
+- [x] Docker containerization
+- [x] Docker Hub image publishing
+- [x] AWS EC2 deployment with Linux OS
+- [x] SSH & HTTPS security configuration
 - [ ] CI/CD pipeline (GitHub Actions)
 - [ ] MLflow integration for experiment tracking
-- [ ] Cloud deployment (AWS SageMaker / Azure ML)
-- [ ] Interactive web dashboard
+- [ ] Load balancer & auto-scaling
 - [ ] Model monitoring & retraining automation
+- [ ] Interactive web dashboard
+- [ ] Kubernetes orchestration
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the `api_flask/` directory:
+
+```env
+FLASK_ENV=production
+MODEL_PATH=../artifacts/models/best_model.pkl
+TRANSFORMER_PATH=../artifacts/transformers/
+PORT=5000
+HOST=0.0.0.0
+```
+
+---
+
+## 📈 Monitoring & Logs
+
+- Application logs: `/var/log/train-api.log`
+- Docker logs: `docker logs train-api`
+- CloudWatch integration for AWS monitoring
 
 ---
 
@@ -212,6 +379,35 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - Dataset source: [Add source]
 - Inspired by real-world MLOps practices
 - Built with open-source tools
+- Deployed on AWS infrastructure
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Docker Container Not Starting**
+```bash
+docker logs train-api
+# Check for port conflicts
+sudo lsof -i :5000
+```
+
+**EC2 Connection Issues**
+```bash
+# Check security group rules
+# Ensure SSH (22), HTTP (80), HTTPS (443) are allowed
+# Verify key pair permissions: chmod 400 your-key.pem
+```
+
+**Flask API Errors**
+```bash
+# Check logs
+tail -f /var/log/train-api.log
+# Verify model artifacts exist
+ls -la artifacts/models/
+```
 
 ---
 
@@ -219,6 +415,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **⭐ If you find this project useful, please consider giving it a star!**
 
-Made with ❤️ and Python
+**🚀 Live API**: `http://your-ec2-ip/predict`
+
+Made with ❤️ and Python | Deployed on AWS
 
 </div>
