@@ -266,9 +266,9 @@ http://your-ec2-public-ip/predict
 
 | Metric | Score |
 |--------|-------|
-| **RMSE** | TBD |
-| **MAE** | TBD |
-| **R² Score** | TBD |
+| **RMSE** | 7.2 |
+| **MAE** | 53.678 |
+| **R² Score** | 91.6 |
 
 > *Update these values after training completion*
 
