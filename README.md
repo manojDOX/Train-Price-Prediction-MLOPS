@@ -13,6 +13,8 @@ This project builds an end-to-end machine learning solution to predict **train t
 
 ---
 
+(Web Site)[http://51.20.8.202:5000/]
+
 ## 🎯 Key Highlights
 
 - ✅ **Automated ML Pipeline**: End-to-end workflow from raw data to trained model
