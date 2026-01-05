@@ -13,7 +13,7 @@ This project builds an end-to-end machine learning solution to predict **train t
 
 ---
 
-**![Web Site](51.20.8.202:5000/)**
+**[Web Site](http://51.20.8.202:5000/)**
 
 ## 🎯 Key Highlights
 
